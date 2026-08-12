@@ -7,35 +7,34 @@ site_configuration = {
             'modules_system': 'lmod',
             'partitions': [
                 {
-                    'name': 'c5',
+                    'name': 'batch',
                     'descr': 'c5 partition',
                     'scheduler': 'slurm',
                     'launcher': 'srun',
-                    'environs': ['intel', 'gnu']
+                    'environs': ['intel-oneapi-prod', 'intel-oneapi-debug', 'gnu'],
+                    'sched_options': {
+                        'slurm_multi_cluster_mode': ['c5']
+                    },
                 }
-            ]
+            ],
         }
     ],
     'environments': [
         {
-            'name': 'intel',
-            'modules': [
-                {
-                    'name': 'PrgEnv-intel/8.6.0',
-                    'name': 'cray-hdf5/1.12.2.11',
-                    'name': 'cray-netcdf',
-                }    
-            ]
+            'name': 'intel-oneapi-prod',
+            'modules': [ 'PrgEnv-intel/8.6.0', 'intel-oneapi', 'cray-hdf5', 'cray-netcdf'],
+            'cflags': ['-O2 -debug minimal -sox -traceback -march=core-avx-i'],
+            'fflags': ['-O3 -debug minimal -fp-model source -march=core-avx-i'],
+        },
+        {
+            'name': 'intel-oneapi-debug',
+            'modules': [ 'PrgEnv-intel/8.6.0', 'intel-oneapi', 'cray-hdf5', 'cray-netcdf'],
+            'cflags': ['-O0 -g -march=core-avx-i'],
+            'fflags': ['-g -O0 -check -check noarg_temp_created -check nopointer -check nouninit -warn -warn noerrors -fpe0 -ftrapuv -march=core-avx-i'],
         },
         {
             'name': 'gnu',
-            'modules': [
-                {
-                    'name': 'PrgEnv-gnu/8.6.0',
-                    'name': 'cray-hdf5/1.12.2.11',
-                    'name': 'cray-netcdf/4.9.0.17',
-                }    
-            ]
+            'modules': [ 'PrgEnv-gnu/8.6.0', 'gcc-native', 'cray-hdf5', 'cray-netcdf'],
         },
-    ]
+    ],
 }
