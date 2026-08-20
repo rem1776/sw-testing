@@ -1,0 +1,98 @@
+systems:
+  - name: workstation
+    descr: GFDL workstations
+    hostnames:
+      - ldt-4742404.gfdl.noaa.gov # TODO modify this to match the actual hostname pattern for the workstation
+    modules_system: lmod
+    partitions:
+      - name: ws
+        descr: run locally with mpirun
+        scheduler: local
+        launcher: mpirun
+        environs:
+          - spack-intel-oneapi
+          - gnu-mpich
+          - gnu-openmpi
+  - name: lscamd50-d
+    descr: MSD development machine
+    hostnames:
+      - lscamd50-d.gfdl.noaa.gov
+    modules_system: lmod
+    partitions:
+      - name: amd
+        descr: run locally with mpirun
+        scheduler: local
+        launcher: mpirun
+        environs:
+          - intel-oneapi
+          - gnu-mpich
+          - gnu-openmpi
+  - name: gaea
+    descr: gaea
+    hostnames:
+      - gaea*
+    modules_system: lmod
+    partitions:
+      - name: batch
+        descr: c5 partition
+        scheduler: slurm
+        launcher: srun
+        environs:
+          - cray-intel-oneapi-prod
+          - cray-intel-oneapi-debug
+          - cray-gnu
+        sched_options:
+          slurm_multi_cluster_mode:
+            - c5
+environments:
+  - name: intel-oneapi # this is using the default intel oneapi modulefiles, directly from intel
+    modules:
+      - oneapi
+      - compiler
+      - mpi
+    ftn: mpiifx
+    cc: mpiicx
+  - name: spack-intel-oneapi # this is using the spack-installed modulefiles instead
+    modules:
+      - intel-oneapi-compilers
+      - intel-oneapi-mpi 
+    ftn: mpiifx
+    cc: mpiicx
+  - name: gnu-mpich
+    modules:
+      - gcc
+      - mpich
+    ftn: mpifort
+    cc: mpicc
+  - name: gnu-openmpi
+    modules:
+      - gcc
+      - openmpi
+    ftn: mpifort
+    cc: mpicc
+  - name: cray-intel-oneapi-prod
+    modules:
+      - PrgEnv-intel/8.6.0
+      - intel-oneapi
+      - cray-hdf5
+      - cray-netcdf
+    cflags:
+      - -O2 -debug minimal -sox -traceback -march=core-avx-i
+    fflags:
+      - -O3 -debug minimal -fp-model source -march=core-avx-i
+  - name: cray-intel-oneapi-debug
+    modules:
+      - PrgEnv-intel/8.6.0
+      - intel-oneapi
+      - cray-hdf5
+      - cray-netcdf
+    cflags:
+      - -O0 -g -march=core-avx-i
+    fflags:
+      - -g -O0 -check -check noarg_temp_created -check nopointer -check nouninit -warn -warn noerrors -fpe0 -ftrapuv -march=core-avx-i
+  - name: cray-gnu
+    modules:
+      - PrgEnv-gnu/8.6.0
+      - gcc-native
+      - cray-hdf5
+      - cray-netcdf
