@@ -2,7 +2,7 @@ import reframe as rfm
 import reframe.utility.sanity as sn
 
 @rfm.simple_test
-class test_mpi_hello_world(rfm.RegressionTest):
+class mpi_hello_world(rfm.RegressionTest):
     valid_systems = ['*']
     valid_prog_environs = ['*']
     build_system = "SingleSource"

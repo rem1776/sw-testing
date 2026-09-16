@@ -15,6 +15,8 @@ systems:
           - spack-intel-oneapi
           - spack-gnu-mpich
           - spack-gnu-openmpi
+          - spack-gnu-vortex-tracker
+          - spack-intel-vortex-tracker
 
   - name: analysis
     descr: GFDL Analysis Cluster
@@ -30,6 +32,8 @@ systems:
           - spack-intel-oneapi
           - spack-gnu-mpich
           - spack-gnu-openmpi
+          - spack-gnu-vortex-tracker
+          - spack-intel-vortex-tracker
 
   - name: lscamd50-d
     descr: MSD development machine
@@ -43,8 +47,6 @@ systems:
         launcher: mpirun
         environs:
           - intel-oneapi
-          - spack-gnu-mpich
-          - spack-gnu-openmpi
 
   - name: gaea
     descr: gaea
@@ -53,7 +55,7 @@ systems:
     modules_system: lmod
     partitions:
       - name: batch
-        descr: c5 partition
+        descr: c5 batch partition
         scheduler: slurm
         launcher: srun
         environs:
@@ -64,8 +66,6 @@ systems:
           slurm_multi_cluster_mode:
             - c5
 
-# these environments load the minimum to compile fms, not necessarily needed for all tests but most gfdl code relies on mpi/netcdf anyway
-# tests can also load specific modules, but its better to keep modules here so that tests can be run anywhere without system-specific module names
 environments:
 # this is using the intel oneapi modulefiles directly from intel, mainly for lscamd50-d
   - name: intel-oneapi
@@ -111,6 +111,50 @@ environments:
       - libtool
     ftn: mpifort
     cc: mpicc
+# these are also spack package names, but with some additions for the vortex tracker
+  - name: spack-gnu-vortex-tracker
+    modules:
+      - gcc
+      - netcdf-c
+      - netcdf-fortran
+      - cmake
+      - libpng/1.6.47
+      - jasper/4.2.4
+      - zlib/1.3.1
+      - zlib-ng/2.2.4
+      - g2c/2.1.0
+      - g2/4.0.0
+      - g2tmpl/1.14.0
+      - bacio/2.6.0
+      - w3emc/2.12.0
+      - nco/5.3.3
+      - cdo/2.5.2
+      - wgrib2/3.6.0
+      - grib-util/1.5.0
+    ftn: gfortran
+    cc: gcc
+  - name: spack-intel-vortex-tracker
+    modules:
+      - intel-oneapi-compilers
+      - intel-oneapi-mpi # the netcdf cmake module searches for mpi if built with it, but the vortex tracker doesn't actually use it
+      - netcdf-c
+      - netcdf-fortran
+      - cmake
+      - libpng/1.6.47
+      - jasper/4.2.4
+      - zlib/1.3.1
+      - zlib-ng/2.2.4
+      - g2c/2.1.0
+      - g2/4.0.0
+      - g2tmpl/1.14.0
+      - bacio/2.6.0
+      - w3emc/2.12.0
+      - nco/5.3.3
+      - cdo/2.5.2
+      - wgrib2/3.6.0
+      - grib-util/1.5.0
+    ftn: ifx
+    cc: icx
 # the rest are cray-specific module names/PrgEnv's
   - name: cray-intel-oneapi-prod
     modules:
