@@ -1,8 +1,10 @@
+# system configs for reframe testing
 systems:
+
   - name: workstation
     descr: GFDL workstations
     hostnames:
-      - ldt-4742404.gfdl.noaa.gov # TODO modify this to match the actual hostname pattern for the workstation
+      - ldt-[0-9]*.gfdl.noaa.gov
     modules_system: lmod
     partitions:
       - name: ws
@@ -11,8 +13,24 @@ systems:
         launcher: mpirun
         environs:
           - spack-intel-oneapi
-          - gnu-mpich
-          - gnu-openmpi
+          - spack-gnu-mpich
+          - spack-gnu-openmpi
+
+  - name: analysis
+    descr: GFDL Analysis Cluster
+    hostnames:
+      - ldt-[0-9]*.gfdl.noaa.gov
+    modules_system: lmod
+    partitions:
+      - name: ws
+        descr: run locally with mpirun
+        scheduler: slurm
+        launcher: srun
+        environs:
+          - spack-intel-oneapi
+          - spack-gnu-mpich
+          - spack-gnu-openmpi
+
   - name: lscamd50-d
     descr: MSD development machine
     hostnames:
@@ -25,8 +43,9 @@ systems:
         launcher: mpirun
         environs:
           - intel-oneapi
-          - gnu-mpich
-          - gnu-openmpi
+          - spack-gnu-mpich
+          - spack-gnu-openmpi
+
   - name: gaea
     descr: gaea
     hostnames:
@@ -44,32 +63,55 @@ systems:
         sched_options:
           slurm_multi_cluster_mode:
             - c5
+
+# these environments load the minimum to compile fms, not necessarily needed for all tests but most gfdl code relies on mpi/netcdf anyway
+# tests can also load specific modules, but its better to keep modules here so that tests can be run anywhere without system-specific module names
 environments:
-  - name: intel-oneapi # this is using the default intel oneapi modulefiles, directly from intel
+# this is using the intel oneapi modulefiles directly from intel, mainly for lscamd50-d
+  - name: intel-oneapi
     modules:
       - oneapi
       - compiler
       - mpi
+      - netcdf
+      - libyaml
     ftn: mpiifx
     cc: mpiicx
-  - name: spack-intel-oneapi # this is using the spack-installed modulefiles instead
+# these are using the spack package names instead
+  - name: spack-intel-oneapi
     modules:
       - intel-oneapi-compilers
-      - intel-oneapi-mpi 
+      - intel-oneapi-mpi
+      - netcdf-c
+      - netcdf-fortran
+      - autoconf
+      - automake
+      - libtool
     ftn: mpiifx
     cc: mpiicx
-  - name: gnu-mpich
+  - name: spack-gnu-mpich
     modules:
       - gcc
       - mpich
+      - netcdf-c
+      - netcdf-fortran
+      - autoconf
+      - automake
+      - libtool
     ftn: mpifort
     cc: mpicc
-  - name: gnu-openmpi
+  - name: spack-gnu-openmpi
     modules:
       - gcc
       - openmpi
+      - netcdf-c
+      - netcdf-fortran
+      - autoconf
+      - automake
+      - libtool
     ftn: mpifort
     cc: mpicc
+# the rest are cray-specific module names/PrgEnv's
   - name: cray-intel-oneapi-prod
     modules:
       - PrgEnv-intel/8.6.0
@@ -80,6 +122,7 @@ environments:
       - -O2 -debug minimal -sox -traceback -march=core-avx-i
     fflags:
       - -O3 -debug minimal -fp-model source -march=core-avx-i
+
   - name: cray-intel-oneapi-debug
     modules:
       - PrgEnv-intel/8.6.0

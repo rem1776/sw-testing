@@ -4,5 +4,5 @@ Holds configurations and tests for GFDL systems using the [reframe](https://refr
 To use:
 ```{bash}
 pip install reframe-hpc
-reframe -C sys-configs/<CONFIG FILE> -c tests/<TEST FILE> -r
+reframe -C sys-configs.yaml -c tests/<TEST FILE> -r
 ```
