@@ -21,7 +21,7 @@ systems:
   - name: analysis
     descr: GFDL Analysis Cluster
     hostnames:
-      - ldt-[0-9]*.gfdl.noaa.gov
+      - an[0-9]*
     modules_system: lmod
     partitions:
       - name: ws
